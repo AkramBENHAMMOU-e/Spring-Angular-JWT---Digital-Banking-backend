@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import ma.tp.ebankingbackend.enums.AccountStatus;
 import java.util.*;
 @Data @AllArgsConstructor  @NoArgsConstructor @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 //@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class BankAccount {
     @Id
