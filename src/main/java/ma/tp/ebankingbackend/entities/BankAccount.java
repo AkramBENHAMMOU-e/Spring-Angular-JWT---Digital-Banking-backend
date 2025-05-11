@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import ma.tp.ebankingbackend.enums.AccountStatus;
 import java.util.*;
 @Data @AllArgsConstructor  @NoArgsConstructor @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-//@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class BankAccount {
     @Id
     private String id;
@@ -18,6 +18,6 @@ public abstract class BankAccount {
     private AccountStatus status;
     @ManyToOne
     private Customer customer;
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount",fetch = FetchType.EAGER)
     private List<AccountOperation> accountOperations;
 }
