@@ -1,5 +1,6 @@
 package ma.tp.ebankingbackend;
 
+import ma.tp.ebankingbackend.dtos.CustomerDTO;
 import ma.tp.ebankingbackend.entities.*;
 import ma.tp.ebankingbackend.enums.AccountStatus;
 import ma.tp.ebankingbackend.enums.OperationType;
@@ -23,32 +24,32 @@ public class EbankingBackendApplication {
         SpringApplication.run(EbankingBackendApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner start(BankAccountService bankAccountService){
-        return args -> {
-           Stream.of("ahmad", "sara", "yassine").forEach(name -> {
-                Customer customer = new Customer();
-                customer.setName(name);
-                customer.setEmail(name + "@gmail.com");
-                bankAccountService.saveCustomer(customer);
-            });
-            bankAccountService.listCustomers().forEach(cust->{
-                try {
-                    bankAccountService.saveCurrentBankAccount(Math.random() * 90000, 9000, cust.getId());
-                    bankAccountService.saveSavingBankAccount(Math.random() * 90000, 5.5, cust.getId());
-                    bankAccountService.listBankAccounts().forEach(bankAccount->{
-                        for (int i = 0; i < 5; i++) {
-                           bankAccountService.credit(bankAccount.getId(), 100 + Math.random() * 9000, "credit");
-                            bankAccountService.debit(bankAccount.getId(), 100 + Math.random() * 9000, "debit");
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-
-        };
-    }
+   // @Bean
+//    CommandLineRunner start(BankAccountService bankAccountService){
+//        return args -> {
+//           Stream.of("ahmad", "sara", "yassine").forEach(name -> {
+//                CustomerDTO customerDTO = new CustomerDTO();
+//                customerDTO.setName(name);
+//                customerDTO.setEmail(name + "@gmail.com");
+//                bankAccountService.saveCustomer(customerDTO);
+//            });
+//            bankAccountService.listCustomers().forEach(cust->{
+//                try {
+//                    bankAccountService.saveCurrentBankAccount(Math.random() * 90000, 9000, cust.getId());
+//                    bankAccountService.saveSavingBankAccount(Math.random() * 90000, 5.5, cust.getId());
+//                    bankAccountService.listBankAccounts().forEach(bankAccount->{
+//                        for (int i = 0; i < 5; i++) {
+//                           bankAccountService.credit(bankAccount.getId(), 100 + Math.random() * 9000, "credit");
+//                            bankAccountService.debit(bankAccount.getId(), 100 + Math.random() * 9000, "debit");
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//
+//        };
+//    }
 
     //@Bean
     CommandLineRunner start(CustomerRepository customerRepository, BankAccountRepository bankAccountRepository , AccountOperationRepository accountOperationRepository) {

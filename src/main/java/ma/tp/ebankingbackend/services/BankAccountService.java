@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface BankAccountService {
 
-    Customer saveCustomer(Customer customer);
+
+
+    CustomerDTO saveCustomer(CustomerDTO customerDTO);
+
     CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId);
     SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, Long customerId);
     List<CustomerDTO> listCustomers();
@@ -20,4 +23,9 @@ public interface BankAccountService {
     void transfer(String accountIdSource, String accountIdDestination, double amount);
    List<BankAccount> listBankAccounts();
 
+    CustomerDTO getCustomer(Long customerId);
+
+    CustomerDTO updateCustomer(CustomerDTO customerDTO);
+
+    void deleteCustomer(Long customerId);
 }

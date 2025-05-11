@@ -5,17 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.tp.ebankingbackend.dtos.CustomerDTO;
 import ma.tp.ebankingbackend.entities.*;
-import ma.tp.ebankingbackend.enums.AccountStatus;
 import ma.tp.ebankingbackend.enums.OperationType;
 import ma.tp.ebankingbackend.mappers.BankAccountMapperImpl;
 import ma.tp.ebankingbackend.repositories.AccountOperationRepository;
 import ma.tp.ebankingbackend.repositories.BankAccountRepository;
 import ma.tp.ebankingbackend.repositories.CustomerRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -29,9 +25,11 @@ public class BankAccountServiceImpl implements BankAccountService{
     private  BankAccountMapperImpl dtoMapper;
 
     @Override
-    public Customer saveCustomer(Customer customer) {
-        log.info("Saving customer " + customer);
-        return customerRepository.save(customer);
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
+        Customer customer = dtoMapper.fromCustomerDTO(customerDTO);
+        log.info("Saving customer " + customerDTO);
+        Customer savedCustomer =  customerRepository.save(customer);
+        return dtoMapper.fromCustomer(savedCustomer);
     }
 
     @Override
@@ -129,5 +127,26 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     public List<BankAccount> listBankAccounts() {
         return bankAccountRepository.findAll();
+    }
+    @Override
+    public CustomerDTO getCustomer(Long customerId) {
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if (customer == null) {
+            throw new RuntimeException("Customer not found");
+        }
+        return dtoMapper.fromCustomer(customer);
+    }
+
+    @Override
+    public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
+        Customer customer = dtoMapper.fromCustomerDTO(customerDTO);
+        log.info("Saving customer " + customerDTO);
+        Customer savedCustomer =  customerRepository.save(customer);
+        return dtoMapper.fromCustomer(savedCustomer);
+    }
+    @Override
+    public void deleteCustomer(Long customerId) {
+        customerRepository.deleteById(customerId);
+        log.info("Customer deleted: " + customerId);
     }
 }
