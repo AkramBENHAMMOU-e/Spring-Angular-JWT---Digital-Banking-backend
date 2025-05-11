@@ -3,9 +3,11 @@ package ma.tp.ebankingbackend.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ma.tp.ebankingbackend.dtos.CustomerDTO;
 import ma.tp.ebankingbackend.entities.*;
 import ma.tp.ebankingbackend.enums.AccountStatus;
 import ma.tp.ebankingbackend.enums.OperationType;
+import ma.tp.ebankingbackend.mappers.BankAccountMapperImpl;
 import ma.tp.ebankingbackend.repositories.AccountOperationRepository;
 import ma.tp.ebankingbackend.repositories.BankAccountRepository;
 import ma.tp.ebankingbackend.repositories.CustomerRepository;
@@ -13,15 +15,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service @Transactional @AllArgsConstructor @Slf4j
 public class BankAccountServiceImpl implements BankAccountService{
-    BankAccountRepository bankAccountRepository;
-    CustomerRepository customerRepository;
-    AccountOperationRepository accountOperationRepository;
+    private  BankAccountRepository bankAccountRepository;
+    private  CustomerRepository customerRepository;
+    private  AccountOperationRepository accountOperationRepository;
+    private  BankAccountMapperImpl dtoMapper;
 
     @Override
     public Customer saveCustomer(Customer customer) {
@@ -53,9 +58,21 @@ public class BankAccountServiceImpl implements BankAccountService{
 
 
     @Override
-    public List<Customer> listCustomers() {
+    public List<CustomerDTO> listCustomers() {
 
-        return customerRepository.findAll();
+      List<Customer> customers =customerRepository.findAll();
+      List<CustomerDTO> customerDTOS = customers.stream()
+              .map(customer -> dtoMapper.fromCustomer(customer))
+              .collect(Collectors.toList());
+      /*
+        for (Customer customer : customers) {
+            CustomerDTO customerDTO = dtoMapper.fromCustomer(customer);
+            customerDTOS.add(customerDTO);
+        }
+
+       */
+
+            return customerDTOS;
     }
 
     @Override
