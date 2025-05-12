@@ -1,6 +1,7 @@
 package ma.tp.ebankingbackend.web;
 
 import lombok.AllArgsConstructor;
+import ma.tp.ebankingbackend.dtos.BankAccountDTO;
 import ma.tp.ebankingbackend.dtos.CustomerDTO;
 import ma.tp.ebankingbackend.entities.Customer;
 import ma.tp.ebankingbackend.services.BankAccountService;
@@ -34,5 +35,13 @@ public class CustomerRestController {
     @DeleteMapping("/customers/{id}")
     public void deleteCustomer(@PathVariable(name = "id") Long customerId) {
         bankAccountService.deleteCustomer(customerId);
+    }
+    @GetMapping("/accounts/{accountId}")
+    public BankAccountDTO getBankAccount(@PathVariable  String accountId) {
+        return bankAccountService.getBankAccount(accountId);
+    }
+    @GetMapping("/accounts")
+    public List<BankAccountDTO> listBankAccounts() {
+        return bankAccountService.listBankAccounts();
     }
 }

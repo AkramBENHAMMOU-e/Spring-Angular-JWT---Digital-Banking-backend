@@ -1,6 +1,9 @@
 package ma.tp.ebankingbackend.services;
 
+import ma.tp.ebankingbackend.dtos.BankAccountDTO;
+import ma.tp.ebankingbackend.dtos.CurrentBankAccountDTO;
 import ma.tp.ebankingbackend.dtos.CustomerDTO;
+import ma.tp.ebankingbackend.dtos.SavingBankAccountDTO;
 import ma.tp.ebankingbackend.entities.BankAccount;
 import ma.tp.ebankingbackend.entities.CurrentAccount;
 import ma.tp.ebankingbackend.entities.Customer;
@@ -14,14 +17,14 @@ public interface BankAccountService {
 
     CustomerDTO saveCustomer(CustomerDTO customerDTO);
 
-    CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId);
-    SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, Long customerId);
+    CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId);
+    SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long customerId);
     List<CustomerDTO> listCustomers();
-    BankAccount getBankAccount(String AccountId);
+    BankAccountDTO getBankAccount(String AccountId);
     void debit(String accountId, double amount, String description);
     void credit(String accountId, double amount, String description);
     void transfer(String accountIdSource, String accountIdDestination, double amount);
-   List<BankAccount> listBankAccounts();
+   List<BankAccountDTO> listBankAccounts();
 
     CustomerDTO getCustomer(Long customerId);
 

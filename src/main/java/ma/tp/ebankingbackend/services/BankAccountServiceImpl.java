@@ -3,7 +3,10 @@ package ma.tp.ebankingbackend.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ma.tp.ebankingbackend.dtos.BankAccountDTO;
+import ma.tp.ebankingbackend.dtos.CurrentBankAccountDTO;
 import ma.tp.ebankingbackend.dtos.CustomerDTO;
+import ma.tp.ebankingbackend.dtos.SavingBankAccountDTO;
 import ma.tp.ebankingbackend.entities.*;
 import ma.tp.ebankingbackend.enums.OperationType;
 import ma.tp.ebankingbackend.mappers.BankAccountMapperImpl;
@@ -33,25 +36,25 @@ public class BankAccountServiceImpl implements BankAccountService{
     }
 
     @Override
-    public CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) {
+    public CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
         CurrentAccount currentAccount = new CurrentAccount();
         currentAccount.setId(UUID.randomUUID().toString());
         currentAccount.setBalance(initialBalance);
         currentAccount.setCreatedAt(new Date());
         currentAccount.setOverDraft(overDraft);
-        return bankAccountRepository.save(currentAccount);
+        return dtoMapper.fromCurrentBankAccount(bankAccountRepository.save(currentAccount));
     }
 
     @Override
-    public SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) {
+    public SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
         SavingAccount savingAccount= new SavingAccount();
         savingAccount.setId(UUID.randomUUID().toString());
         savingAccount.setBalance(initialBalance);
         savingAccount.setCreatedAt(new Date());
         savingAccount.setInterestRate(interestRate);
-        return bankAccountRepository.save(savingAccount);
+        return dtoMapper.fromSavingBankAccount(bankAccountRepository.save(savingAccount));
     }
 
 
@@ -74,18 +77,27 @@ public class BankAccountServiceImpl implements BankAccountService{
     }
 
     @Override
-    public BankAccount getBankAccount(String AccountId) {
-        BankAccount bankAccount = bankAccountRepository.findById(AccountId).orElse(null);
+    public BankAccountDTO getBankAccount(String accountId) {
+            BankAccount bankAccount = bankAccountRepository.findById(accountId).orElse(null);
         if (bankAccount == null) {
             throw new RuntimeException("Bank account not found");
         }
-        log.info("Bank account found: " + bankAccount.getId());
-        return bankAccount;
+        if (bankAccount instanceof SavingAccount){
+            SavingAccount savingAccount = (SavingAccount) bankAccount;
+            return dtoMapper.fromSavingBankAccount(savingAccount);
+        }
+        else{
+            CurrentAccount currentAccount = (CurrentAccount) bankAccount;
+            return dtoMapper.fromCurrentBankAccount(currentAccount);
+        }
     }
 
     @Override
     public void debit(String accountId, double amount, String description) {
-        BankAccount bankAccount = getBankAccount(accountId);
+        BankAccount bankAccount = bankAccountRepository.findById(accountId).orElse(null);
+        if (bankAccount == null) {
+            throw new RuntimeException("Bank account not found");
+        }
         if (bankAccount.getBalance() < amount) {
             throw new RuntimeException("Insufficient balance");
         }
@@ -104,7 +116,10 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     @Override
     public void credit(String accountId, double amount, String description) {
-        BankAccount bankAccount = getBankAccount(accountId);
+        BankAccount bankAccount = bankAccountRepository.findById(accountId).orElse(null);
+        if (bankAccount == null) {
+            throw new RuntimeException("Bank account not found");
+        }
         AccountOperation accountOperation = new AccountOperation();
         accountOperation.setOperationDate(new Date());
         accountOperation.setAmount(amount);
@@ -125,8 +140,16 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     }
 
-    public List<BankAccount> listBankAccounts() {
-        return bankAccountRepository.findAll();
+    public List<BankAccountDTO> listBankAccounts() {
+        List<BankAccount> bankAccounts = bankAccountRepository.findAll();
+        List<BankAccountDTO> bankAccountDTOS = bankAccounts.stream().map(bankAccount -> {
+            if (bankAccount instanceof SavingAccount) {
+                return dtoMapper.fromSavingBankAccount((SavingAccount) bankAccount);
+            } else {
+                return dtoMapper.fromCurrentBankAccount((CurrentAccount) bankAccount);
+            }
+        }).collect(Collectors.toList());
+        return bankAccountDTOS;
     }
     @Override
     public CustomerDTO getCustomer(Long customerId) {
