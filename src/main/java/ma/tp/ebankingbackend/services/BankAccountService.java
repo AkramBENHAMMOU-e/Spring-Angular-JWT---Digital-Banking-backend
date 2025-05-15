@@ -1,9 +1,6 @@
 package ma.tp.ebankingbackend.services;
 
-import ma.tp.ebankingbackend.dtos.BankAccountDTO;
-import ma.tp.ebankingbackend.dtos.CurrentBankAccountDTO;
-import ma.tp.ebankingbackend.dtos.CustomerDTO;
-import ma.tp.ebankingbackend.dtos.SavingBankAccountDTO;
+import ma.tp.ebankingbackend.dtos.*;
 import ma.tp.ebankingbackend.entities.BankAccount;
 import ma.tp.ebankingbackend.entities.CurrentAccount;
 import ma.tp.ebankingbackend.entities.Customer;
@@ -24,11 +21,15 @@ public interface BankAccountService {
     void debit(String accountId, double amount, String description);
     void credit(String accountId, double amount, String description);
     void transfer(String accountIdSource, String accountIdDestination, double amount);
-   List<BankAccountDTO> listBankAccounts();
+   List<BankAccountDTO> bankAccountList();
 
     CustomerDTO getCustomer(Long customerId);
 
     CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
     void deleteCustomer(Long customerId);
+
+    List<AccountOperationDTO> accountHistory(String accountId);
+
+    AccountHistoryDTO getAccountHistory(String accountId, int page, int size);
 }
