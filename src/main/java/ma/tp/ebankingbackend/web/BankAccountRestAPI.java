@@ -26,6 +26,11 @@ public class BankAccountRestAPI {
           return bankAccountService.bankAccountList();
       }
 
+      @GetMapping("/customers/{customerId}/accounts")
+      public List<BankAccountDTO> getAccountsByCustomerId(@PathVariable Long customerId) {
+          return bankAccountService.getAccountsByCustomerId(customerId);
+      }
+
 
     @GetMapping("/accounts/{accountId}/operations")
     public   List<AccountOperationDTO> getAccountHistory(@PathVariable  String accountId) {

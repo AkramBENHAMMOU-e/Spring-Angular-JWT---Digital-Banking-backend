@@ -42,6 +42,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         currentAccount.setBalance(initialBalance);
         currentAccount.setCreatedAt(new Date());
         currentAccount.setOverDraft(overDraft);
+        currentAccount.setCustomer(customer);
         return dtoMapper.fromCurrentBankAccount(bankAccountRepository.save(currentAccount));
     }
 
@@ -53,6 +54,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         savingAccount.setBalance(initialBalance);
         savingAccount.setCreatedAt(new Date());
         savingAccount.setInterestRate(interestRate);
+        savingAccount.setCustomer(customer);
         return dtoMapper.fromSavingBankAccount(bankAccountRepository.save(savingAccount));
     }
 
@@ -204,5 +206,17 @@ public class BankAccountServiceImpl implements BankAccountService {
         return customerDTOS;
     }
 
+    @Override
+    public List<BankAccountDTO> getAccountsByCustomerId(Long customerId) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByCustomerId(customerId);
+        List<BankAccountDTO> bankAccountDTOS = bankAccounts.stream().map(bankAccount -> {
+            if (bankAccount instanceof SavingAccount) {
+                return dtoMapper.fromSavingBankAccount((SavingAccount) bankAccount);
+            } else {
+                return dtoMapper.fromCurrentBankAccount((CurrentAccount) bankAccount);
+            }
+        }).collect(Collectors.toList());
+        return bankAccountDTOS;
+    }
 
 }

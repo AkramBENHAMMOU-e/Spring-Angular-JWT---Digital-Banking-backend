@@ -34,4 +34,6 @@ public interface BankAccountService {
     AccountHistoryDTO getAccountHistory(String accountId, int page, int size);
 
     List<CustomerDTO> searchCustomers(String keyword);
+
+    List<BankAccountDTO> getAccountsByCustomerId(Long customerId);
 }
